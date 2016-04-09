@@ -1,0 +1,17 @@
+# Clack-Static-Asset-Middleware
+
+## Usage
+
+## Installation
+
+## Author
+
+* Matt Novenstern (fisxoj@gmail.com)
+
+## Copyright
+
+Copyright (c) 2016 Matt Novenstern (fisxoj@gmail.com)
+
+## License
+
+Licensed under the MIT License.
