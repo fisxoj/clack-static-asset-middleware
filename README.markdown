@@ -7,7 +7,7 @@ This will, evetually, define helpers for templating engines in sub-packages that
 
 ## Usage
 
-    At this time, `clack-static-asset-middleware` is not usable.
+    At this time, `clack-static-asset-middleware` is not usable.  Give me another week or two.
 ## Installation
 
     `clack-static-asset-middleware` is not yet in quicklisp, so clone it into your quicklisp `local-projects` directory. Then, run
