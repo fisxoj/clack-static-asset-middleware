@@ -43,13 +43,27 @@
 e.g. 'style/homepage.css => style/homepage_2867f3f83a6a91ad4a19a6cd45536152.css")
 
 
+(defvar *base-path* "/"
+  "Base path of the assets on the server.  Maybe something like \"static/\".")
+
+
 (defun md5-file (pathname &key buffer digest)
   "Generate a string of hex digits for a given pathname."
   (ironclad:byte-array-to-hex-string (ironclad:digest-file :md5 pathname :buffer buffer :digest digest)))
 
+
 (defun root-relative-path (pathname root)
   "Produces a relative pathname relative to the root of the asset directory.  The string that might be specified in a template, for example."
   (subseq (uiop:native-namestring pathname) (length (uiop:native-namestring root))))
+
+
+(defun walk-directory (directory &key (filter-function +default-filter-function+))
+  "Collects all the files in `directory` except those excluded by `filter-function`."
+  (let (directories)
+    (uiop:collect-sub*directories directory t t (lambda (p) (push p directories)))
+
+    (remove-if filter-function (apply #'append (mapcar #'uiop:directory-files directories)))))
+
 
 (defun inventory-files (pathnames path root
                         &key
@@ -66,37 +80,35 @@ e.g. 'style/homepage.css => style/homepage_2867f3f83a6a91ad4a19a6cd45536152.css"
      unless (funcall filter-function p)
      do (setf (gethash root-relative-path asset-table)
               (funcall cache-buster-function
-                       (concatenate 'string (uiop:native-namestring path) root-relative-path)
-                       (md5-file p :buffer buffer :digest digest)))))
+                       (concatenate 'string "/" (uiop:native-namestring path) root-relative-path)
+                       (md5-file p :buffer buffer :digest digest)))
 
-(defun walk-directory (directory &key (filter-function +default-filter-function+))
-  "Collects all the files in `directory` except those excluded by `filter-function`. `max-depth` sets how many directories `walk-directory` will descend."
-  (let (directories)
-    (uiop:collect-sub*directories directory t t (lambda (p) (push p directories)))
+     finally (return asset-table)))
 
-    (remove-if filter-function (apply #'append (mapcar #'uiop:directory-files directories)))))
 
 (defun asset-response (relative-path root)
   "Generate the `clack` respone with an file or a 404.  Expects `relative-path` to be a string with no leading `/`."
   (let ((file (uiop:merge-pathnames* relative-path root)))
-    (with-open-file (stream file :direction :input)
-      (handler-case
+    (handler-case
+        (with-open-file (stream file :direction :input)
           `(200
             (:content-type ,(mimes:mime file)
-             :content-length ,(file-length stream)
-             :content-cache "max-age=31556926"
-             :last-modified ,(local-time:format-rfc1123-timestring nil (local-time:universal-to-timestamp (file-write-date file))))
-            ,file)
+                           :content-length ,(file-length stream)
+                           :content-cache "max-age=31556926"
+                           :last-modified ,(local-time:format-rfc1123-timestring nil (local-time:universal-to-timestamp (file-write-date file))))
+            ,file))
 
-        (simple-error ()
-          '(404
-            (:content-type "text/plain"
-             :content-length 9)
-            ("Not Found")))))))
+      (file-error ()
+        '(404
+          (:content-type "text/plain"
+           :content-length 9)
+          ("Not Found"))))))
+
 
 (defun busted-uri-for-path (path)
   "Lookup the busted resource uri for a given path.  Returns the given path if none is found."
-  (gethash path *asset-lookup-table* path))
+  (or (gethash path *asset-lookup-table* nil) (pathname (concatenate 'string "/" *base-path* path))))
+
 
 (defparameter *clack-static-asset-middleware*
   (lambda (app &key
@@ -123,5 +135,6 @@ e.g. 'style/homepage.css => style/homepage_2867f3f83a6a91ad4a19a6cd45536152.css"
 
                 ;; Bind the asset table so helper functions inside the request can
                 ;; get to it.
-                (let ((*asset-lookup-table* asset-table))
+                (let ((*asset-lookup-table* asset-table)
+                      (*base-path* path))
                   (funcall app env)))))))))

@@ -71,17 +71,33 @@
 
     (destructuring-bind (status headers body) (funcall app (generate-env "/"))
       (declare (ignore headers body))
-      (is status 200 "The app still receives requests."))))
+      (is status 200 "The app still receives requests."))
+
+    (destructuring-bind (status headers body) (funcall app (generate-env "/static/madness/hypnotoad.png"))
+      (declare (ignore headers body))
+      (is status 404 "Missing assets 404."))))
 
 (subtest "Getting cache busted uris"
   (let ((app (funcall clack-static-asset-middleware:*clack-static-asset-middleware*
                       (lambda (env) (declare (ignore env))
-                              `(200 (:content-type "text/plain") ((busted-uri-for-path "images/gustywinds.jpg"))))
+                              `(200 (:content-type "text/plain") (,(busted-uri-for-path "images/gustywinds.jpg"))))
                       :root (asdf:system-relative-pathname :clack-static-asset-middleware "t/assets/")
                       :path "static/")))
 
-    (destructuring-bind (status headers body) (funcall app (generate-env "/static/images/gustywinds_2867f3f83a6a91ad4a19a6cd45536152.jpg"))
+    (destructuring-bind (status headers body) (funcall app (generate-env "/"))
       (declare (ignore headers status))
-      (is body "/static/images/gustywinds_2867f3f83a6a91ad4a19a6cd45536152.jpg"))))
+      (is (car body) #P"/static/images/gustywinds_2867f3f83a6a91ad4a19a6cd45536152.jpg"
+          "Cache busted uri's lookup.")))
+
+  (let ((app (funcall clack-static-asset-middleware:*clack-static-asset-middleware*
+                      (lambda (env) (declare (ignore env))
+                              `(200 (:content-type "text/plain") (,(busted-uri-for-path "email/logo.png"))))
+                      :root (asdf:system-relative-pathname :clack-static-asset-middleware "t/assets/")
+                      :path "static/")))
+
+    (destructuring-bind (status headers body) (funcall app (generate-env "/"))
+      (declare (ignore headers status))
+      (is (car body) #P"/static/email/logo.png"
+          "Even if we don't find a url, the given uri is returned."))))
 
 (finalize)
