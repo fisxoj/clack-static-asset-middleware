@@ -7,24 +7,24 @@ This will, evetually, define helpers for templating engines in sub-packages that
 
 ## Usage
 
-    At this time, `clack-static-asset-middleware` is not usable.  Give me another week or two.
+At this time, `clack-static-asset-middleware` is not usable.  Give me another week or two.
 ## Installation
 
-    `clack-static-asset-middleware` is not yet in quicklisp, so clone it into your quicklisp `local-projects` directory. Then, run
+`clack-static-asset-middleware` is not yet in quicklisp, so clone it into your quicklisp `local-projects` directory. Then, run
 
-    ```lisp
-    (ql:quickload :clack-static-asset-middleware)
-    ```
+```lisp
+(ql:quickload :clack-static-asset-middleware)
+```
 
-    or refer to it in your system definition
+or refer to it in your system definition
 
-    ```lisp
-    (asdf:defsystem my-great-webapp
-        ...
-        :depends-on (#:clack-static-asset-middleware)
-        ..
-        )
-    ```
+```lisp
+(asdf:defsystem my-great-webapp
+    ...
+    :depends-on (#:clack-static-asset-middleware)
+    ..
+    )
+```
 
 
 ## Author
