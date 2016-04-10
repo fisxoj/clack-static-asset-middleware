@@ -12,7 +12,8 @@
   :author "Matt Novenstern"
   :license "MIT"
   :depends-on (:clack-static-asset-middleware
-               :prove)
+               :prove
+               :lack-test)
   :components ((:module "t"
                 :components
                 ((:test-file "clack-static-asset-middleware"))))

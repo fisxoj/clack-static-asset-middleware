@@ -2,12 +2,35 @@
 (defpackage clack-static-asset-middleware-test
   (:use :cl
         :clack-static-asset-middleware
-        :prove))
+        :prove)
+  (:import-from #:lack.test
+                #:generate-env))
 (in-package :clack-static-asset-middleware-test)
 
 ;; NOTE: To run this test file, execute `(asdf:test-system :clack-static-asset-middleware)' in your Lisp.
 
-(plan 3)
+(plan 7)
+
+(subtest "File filters"
+
+  (ok (not (funcall clack-static-asset-middleware::+default-filter-function+ (pathname "/home/user/file.txt")))
+      "Non-dotted files allowed.")
+  (ok (funcall clack-static-asset-middleware::+default-filter-function+ (pathname "/home/user/.file.txt"))
+      "Dotted files are filtered."))
+
+(subtest "Cache buster"
+         (is (funcall clack-static-asset-middleware:+default-cache-buster-function+ (pathname "style/homepage.css") "2867f3f83a6a91ad4a19a6cd45536152")
+             (pathname "style/homepage_2867f3f83a6a91ad4a19a6cd45536152.css")
+             "Cache busting works."))
+
+(subtest "Cache *un*buster"
+         (is (funcall clack-static-asset-middleware:+default-cache-unbuster-function+ "style/homepage_2867f3f83a6a91ad4a19a6cd45536152.css")
+             "style/homepage.css"
+             "Parses busted urls correctly.")
+         (is (funcall clack-static-asset-middleware:+default-cache-unbuster-function+ "style/homepage.css")
+             "style/homepage.css"
+             "Allows unbusted urls, too."))
+
 
 (subtest "MD5 Files"
   (is (clack-static-asset-middleware::md5-file (asdf:system-relative-pathname :clack-static-asset-middleware-test "t/assets/potato.txt"))
@@ -16,20 +39,49 @@
     (is (clack-static-asset-middleware::md5-file (asdf:system-relative-pathname :clack-static-asset-middleware-test "t/assets/images/gustywinds.jpg"))
       "2867f3f83a6a91ad4a19a6cd45536152"))
 
-(subtest "File filters"
-
-  (ok (not (funcall clack-static-asset-middleware::*default-filter-function* (pathname #P"/home/user/file.txt")))
-      "Non-dotted files allowed.")
-  (ok (funcall clack-static-asset-middleware::*default-filter-function* (pathname #P"/home/user/.file.txt"))
-      "Dotted files are filtered."))
-
 (subtest "Relative pathnames"
 
   (let ((root (pathname #P"/var/www/assets/")))
-    (is (clack-static-asset-middleware::root-relative-path (pathname #P"/var/www/assets/potato.jpg") root)
-        "potato.jpg")
+    (is (clack-static-asset-middleware::root-relative-path (pathname "/var/www/assets/potato.jpg") root)
+        "potato.jpg"
+        "Files in the root of... root resolve correctly.")
 
-    (is (clack-static-asset-middleware::root-relative-path (pathname #P"/var/www/assets/styles/best-assets.css") root)
-        "styles/best-assets.css")))
+    (is (clack-static-asset-middleware::root-relative-path (pathname "/var/www/assets/styles/best-assets.css") root)
+        "styles/best-assets.css"
+        "Files in subdirectories resolve correctly.")))
+
+(subtest "Serving assets"
+  (let ((app (funcall clack-static-asset-middleware:*clack-static-asset-middleware*
+                      (lambda (env) (declare (ignore env))
+                              '(200 (:content-type "text/plain") ("Happy Valentine!")))
+                      :root (asdf:system-relative-pathname :clack-static-asset-middleware "t/assets/")
+                      :path "static/")))
+
+    (destructuring-bind (status headers body) (funcall app (generate-env "/static/images/gustywinds_2867f3f83a6a91ad4a19a6cd45536152.jpg"))
+      (declare (ignore headers body))
+      (is status 200 "Busted assets are found."))
+
+    (destructuring-bind (status headers body) (funcall app (generate-env "/static/images/gustywinds_2867f3f83a6a91ad4a19a6cd45536152.jpg?potato=pizza"))
+      (declare (ignore headers body))
+      (is status 200 "Busted assets with querystrings are found."))
+
+    (destructuring-bind (status headers body) (funcall app (generate-env "/static/images/gustywinds.jpg"))
+      (declare (ignore headers body))
+      (is status 200 "Unbusted urls are found."))
+
+    (destructuring-bind (status headers body) (funcall app (generate-env "/"))
+      (declare (ignore headers body))
+      (is status 200 "The app still receives requests."))))
+
+(subtest "Getting cache busted uris"
+  (let ((app (funcall clack-static-asset-middleware:*clack-static-asset-middleware*
+                      (lambda (env) (declare (ignore env))
+                              `(200 (:content-type "text/plain") ((busted-uri-for-path "images/gustywinds.jpg"))))
+                      :root (asdf:system-relative-pathname :clack-static-asset-middleware "t/assets/")
+                      :path "static/")))
+
+    (destructuring-bind (status headers body) (funcall app (generate-env "/static/images/gustywinds_2867f3f83a6a91ad4a19a6cd45536152.jpg"))
+      (declare (ignore headers status))
+      (is body "/static/images/gustywinds_2867f3f83a6a91ad4a19a6cd45536152.jpg"))))
 
 (finalize)
