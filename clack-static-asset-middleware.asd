@@ -16,8 +16,8 @@
   :version "0.1"
   :author "Matt Novenstern"
   :license "MIT"
-  :depends-on (:alexandria
-               :uiop)
+  :depends-on (:uiop
+               :ironclad)
   :components ((:module "src"
                 :components
                 ((:file "clack-static-asset-middleware"))))
