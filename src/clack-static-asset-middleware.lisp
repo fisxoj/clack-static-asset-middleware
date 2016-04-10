@@ -5,7 +5,7 @@
 
 (defparameter *default-filter-function*
   (lambda (p) (char= (char (pathname-name p) 0) #\.))
-  "Function to filer out files that would be hidden on a unix system.  Namely, anything that starts with a `#\.`.")
+  "Function to filter out files that would be hidden on a unix system.  Namely, anything that starts with a `#\.`.")
 
 (defun md5-file (pathname &key buffer digest)
   "Generate a string of hex digits for a given pathname."
