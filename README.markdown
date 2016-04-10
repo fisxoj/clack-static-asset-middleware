@@ -1,5 +1,5 @@
 # Clack-Static-Asset-Middleware
-[![Build Status](https://travis-ci.org/fisxoj/clack-static-asset-middleware.svg?branch=master)](https://travis-ci.org/fisxoj/clavkckck-startcic-assets--kmimiddleware) [![Coverage Status](https://coveralls.io/repos/github/fisxoj/clack-static-asset-middleware/badge.svg?branch=master)](https://coveralls.io/github/fisxoj/clack-static-asset-middleware?branch=master)
+[![Build Status](https://travis-ci.org/fisxoj/clack-static-asset-middleware.svg?branch=master)](https://travis-ci.org/fisxoj/clack-static-asset-middleware) [![Coverage Status](https://coveralls.io/repos/github/fisxoj/clack-static-asset-middleware/badge.svg?branch=master)](https://coveralls.io/github/fisxoj/clack-static-asset-middleware?branch=master)
 
 The static asset middleware is for handling versioned static assets.  That means that, when the assets of your webapp change, it will be referred to by a different filename, allowing a browser to instantly know that it needs to download a new file.  Assets are served with the maximum cache time headers set so browsers will never ask for them again.
 
