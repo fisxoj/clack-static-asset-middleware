@@ -116,7 +116,7 @@
 
     (destructuring-bind (status headers body) (funcall app (generate-env "/"))
       (declare (ignore headers status))
-      (is (car body) "<link rel=\"stylesheet\" src=\"/static/styles/cool_a05b624b84b58992a24f93011325878f.css\">
+      (is (car body) "<link rel=\"stylesheet\" href=\"/static/styles/cool_a05b624b84b58992a24f93011325878f.css\">
 "
           "Stylesheet tag works.")))
 
