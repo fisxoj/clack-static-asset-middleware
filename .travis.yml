@@ -9,6 +9,19 @@ env:
   matrix:
     - LISP=sbcl-bin COVERALLS=true
     - LISP=ccl-bin
+    - LISP=abcl
+    - LISP=clisp
+    - LISP=ecl
+    - LISP=cmucl
+    - LISP=alisp
+
+matrix:
+  allow_failures:
+    - env: LISP=clisp
+    - env: LISP=abcl
+    - env: LISP=ecl
+    - env: LISP=cmucl
+    - env: LISP=alisp
 
 install:
   # Install Roswell
