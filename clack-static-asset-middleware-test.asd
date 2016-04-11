@@ -12,6 +12,7 @@
   :author "Matt Novenstern"
   :license "MIT"
   :depends-on (:clack-static-asset-middleware
+               :clack-static-asset-djula
                :prove
                :lack-test)
   :components ((:module "t"
