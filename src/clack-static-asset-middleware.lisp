@@ -95,6 +95,7 @@ e.g. 'style/homepage.css => style/homepage_2867f3f83a6a91ad4a19a6cd45536152.css"
             (:content-type ,(mimes:mime file)
                            :content-length ,(file-length stream)
                            :content-cache "max-age=31556926"
+                           :vary "Accept-Encoding"  ;; https://www.maxcdn.com/blog/accept-encoding-its-vary-important/
                            :last-modified ,(local-time:format-rfc1123-timestring nil (local-time:universal-to-timestamp (file-write-date file))))
             ,file))
 
