@@ -13,7 +13,7 @@
 (in-package :clack-static-asset-middleware-asd)
 
 (defsystem clack-static-asset-middleware
-  :version "0.1"
+  :version "1.0"
   :author "Matt Novenstern"
   :license "MIT"
   :depends-on (:alexandria
