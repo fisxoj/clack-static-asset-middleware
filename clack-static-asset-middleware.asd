@@ -13,7 +13,7 @@
 (in-package :clack-static-asset-middleware-asd)
 
 (defsystem clack-static-asset-middleware
-  :version "0.1"
+  :version "1.0"
   :author "Matt Novenstern"
   :license "MIT"
   :depends-on (:alexandria
@@ -25,7 +25,7 @@
   :components ((:module "src"
                 :components
                 ((:file "clack-static-asset-middleware"))))
-  :description ""
+  :description "A cache busting static file middleware for the clack web framework."
   :long-description
   #.(with-open-file (stream (merge-pathnames
                              #p"README.markdown"

@@ -46,7 +46,7 @@
   (let ((root (pathname #P"/var/www/assets/")))
     (is (clack-static-asset-middleware::root-relative-path (pathname "/var/www/assets/potato.jpg") root)
         "potato.jpg"
-        "Files in the root of... root resolve correctly.")
+        "Files in the base of 'root' directory resolve correctly.")
 
     (is (clack-static-asset-middleware::root-relative-path (pathname "/var/www/assets/styles/best-assets.css") root)
         "styles/best-assets.css"
