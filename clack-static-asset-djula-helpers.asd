@@ -4,12 +4,12 @@
 |#
 
 (in-package :cl-user)
-(defpackage clack-static-asset-djula-asd
+(defpackage clack-static-asset-djula-helpers-asd
   (:use :cl :asdf))
-(in-package :clack-static-asset-djula-asd)
+(in-package :clack-static-asset-djula-helpers-asd)
 
-(defsystem clack-static-asset-djula
-  :version "0.1"
+(defsystem clack-static-asset-djula-helpers
+  :version "1.0"
   :author "Matt Novenstern"
   :license "MIT"
   :depends-on (:clack-static-asset-middleware

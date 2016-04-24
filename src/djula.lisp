@@ -1,9 +1,9 @@
 (in-package :cl-user)
-(defpackage clack-static-asset-middleware-djula
+(defpackage clack-static-asset-djula-helpers
   (:use #:cl
         #:clack-static-asset-middleware))
 
-(in-package :clack-static-asset-middleware-djula)
+(in-package :clack-static-asset-djula-helpers)
 
 (djula::def-tag-compiler :stylesheet-tag (path)
   (lambda (stream)
