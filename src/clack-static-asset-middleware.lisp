@@ -125,7 +125,10 @@ e.g. 'style/homepage.css => style/homepage_2867f3f83a6a91ad4a19a6cd45536152.css"
                                         :cache-buster-function cache-buster-function)))
       (lambda (env)
         ;; Strip the leading /
-        (let ((request-path (subseq (getf env :path-info) 1)))
+        (let ((request-path (subseq (if (alexandria:emptyp (getf env :path-info))
+                                        "/"
+                                        (getf env :path-info))
+                                    1)))
 
           ;; Is this a request for us to handle? (Is it a path under `path`?)
           (multiple-value-bind (asset-request-p relative-path) (starts-with-subseq path request-path :return-suffix t)
